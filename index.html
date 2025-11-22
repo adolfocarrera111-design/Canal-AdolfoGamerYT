@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>AdolfoGamerYT</title>
+    <style>
+        h1 {
+            font-size: 2.5rem; /* Puedes ajustar el tamaño */
+            text-align: center;
+            /* Creamos un gradiente de colores para el fondo */
+            background: linear-gradient(to right, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            /* Hacemos que el fondo se aplique solo al texto */
+            -webkit-background-clip: text;
+            background-clip: text;
+            /* Hacemos el color del texto transparente para que se vea el fondo */
+            color: transparent;
+            /* Aumentamos el tamaño del fondo para la animación */
+            background-size: 200% auto;
+            /* Aplicamos la animación */
+            animation: gradient-animation 5s linear infinite;
+        }
+
+        @keyframes gradient-animation {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .titulo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; /* Para que los elementos se apilen verticalmente */
+        }
+
+        main {
+            background-color: #8DB600; /* Verde Manzana */
+        }
+
+        .card-fija p, .card-fija a, .card-fija strong {
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+       <header>
+    <!--   -->
+    <div class="titulo-container">
+        <!-- AQUÍ COLOCAS TU IMAGEN -->
+        
+        <!-- Tu título va justo después -->
+        <h1 data-key="welcome_title">BIENVENIDO A MI CANAL DE AdolfoGamerYT</h1>
+        <p style="font-size: 1.5rem; color: white; text-shadow: 2px 2px 4px #000000;">Jesús te ama</p>
+    </div>
+    
+    <!-- Aquí va el resto de tu cabecera, como la barra de búsqueda -->
+    <div class="controls-container">
+        <div class="lang-switcher">
+            <button id="lang-es">Español</button>
+            <button id="lang-pt">Português</button>
+        </div>
+        <div class="search-container">
+            <input type="search" id="campo-busca" placeholder="Digita aqui..." data-key-placeholder="search_placeholder">
+            <button id="botao-busca" data-key="search_button">Buscar</button>
+        </div>
+    </div>
+</header>
+
+    <main>
+      <section id="card-list" class="card-container">
+        <article class="card card-fija">
+            <h2 data-key="card_fija_title">Aqui encontraran contenido como:</h2>
+            <p><strong data-key="card_fija_item1">Momentos destacado en fcmobile jugador 113 hazard</strong></p>
+            <p data-key="card_fija_item2">Grupo de whatsapp</p>
+            <p><strong style="color: red;" data-key="card_fija_instruction">solo copien esos contenidos y coloquenlo en la barra de busqueda</strong></p>
+        </article>
+        <!-- Las tarjetas se cargarán aquí dinámicamente desde Data.json -->
+      </section>
+    </main>
+
+    <footer class="footer">
+        <ul class="footer-links">
+          <li>
+           <a href="https://www.youtube.com/@adolfocarrera777" data-key="footer_link">MAS DETALLES DEL CANAL PRESIONA AQUI</a> 
+           GRACIAS ALURA
+          </li>  
+        </ul>
+    </footer>
+
+    <script>
+        const cardContainer = document.getElementById('card-list');
+        const searchInput = document.getElementById('campo-busca');
+        const searchButton = document.getElementById('botao-busca');
+        const langEsButton = document.getElementById('lang-es');
+        const langPtButton = document.getElementById('lang-pt');
+
+        // Carga las tarjetas dinámicas desde el archivo JSON del idioma correspondiente.
+        async function loadDynamicCards(lang) {
+            // Limpia las tarjetas dinámicas existentes
+            document.querySelectorAll('#card-list .card:not(.card-fija)').forEach(card => card.remove());
+
+            try {
+                const response = await fetch(`Data_${lang}.json`);
+                const data = await response.json();
+
+                data.forEach(item => {
+                    const card = document.createElement('article');
+                    card.classList.add('card');
+                    card.style.display = 'none'; // Oculta por defecto
+                    card.innerHTML = `
+                        <h2>${item.nome}</h2>
+                        <p>${item.data}</p>
+                        <p>${item.descricao}</p>
+                        <a href="${item.url}" target="_blank">${lang === 'es' ? 'presiona aqui' : 'clique aqui'}</a>
+                    `;
+                    cardContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar los datos de las tarjetas:', error);
+            }
+        }
+
+        // Traduce los elementos estáticos de la UI.
+        async function translateUI(lang) {
+            try {
+                const response = await fetch(`lang_${lang}.json`);
+                const translations = await response.json();
+
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.getAttribute('data-key');
+                    if (translations[key]) {
+                        element.textContent = translations[key];
+                    }
+                });
+
+                document.querySelectorAll('[data-key-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-key-placeholder');
+                    if (translations[key]) {
+                        element.placeholder = translations[key];
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error al cargar las traducciones de la UI:', error);
+            }
+        }
+
+        // Cambia el idioma de toda la página.
+        async function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            localStorage.setItem('userLanguage', lang); // Guarda la preferencia
+            await translateUI(lang);
+            await loadDynamicCards(lang);
+            // Después de cargar, la búsqueda debe reiniciarse para mostrar la tarjeta fija.
+            iniciarBusca();
+        }
+
+        // Función de búsqueda (sin cambios, solo movida).
+        function iniciarBusca() {
+            const termoBusca = searchInput.value.toLowerCase();
+            const cards = document.querySelectorAll('#card-list .card:not(.card-fija)');
+            const cardFija = document.querySelector('.card-fija');
+
+            if (termoBusca.trim() === '') {
+                cardFija.style.display = 'block';
+                cards.forEach(card => card.style.display = 'none');
+                return;
+            }
+
+            cardFija.style.display = 'none';
+            cards.forEach(card => {
+                const textoCard = card.textContent.toLowerCase();
+                card.style.display = textoCard.includes(termoBusca) ? 'block' : 'none';
+            });
+        }
+
+        // --- Event Listeners ---
+
+        // Al cargar la página, establece el idioma guardado o el predeterminado.
+        document.addEventListener('DOMContentLoaded', () => {
+            const userLang = localStorage.getItem('userLanguage') || 'es';
+            setLanguage(userLang);
+        });
+
+        // Listeners para los botones de idioma.
+        langEsButton.addEventListener('click', () => setLanguage('es'));
+        langPtButton.addEventListener('click', () => setLanguage('pt'));
+
+        // Listeners para la búsqueda.
+        searchButton.addEventListener('click', iniciarBusca);
+        searchInput.addEventListener('keyup', iniciarBusca);
+    </script>
+</body>
+</html>
