@@ -1,9 +1,5 @@
-Explicación del projeto:
-una aplicación web de una sola página (SPA - Single Page Application) muy funcional y bien pensada. Es:
-Dinámica: El contenido no es estático, se carga desde archivos externos.
-Interactiva: Responde a las acciones del usuario (búsqueda, cambio de idioma) en tiempo real.
-Accesible: Ofrece el contenido en varios idiomas.
-Moderna: Utiliza técnicas como animaciones CSS y carga asíncrona de datos (fetch).
+Explicação do projeto:
+um aplicativo web de página única (SPA - Single Page Application) muito funcional e bem planejado. É: Dinâmico: o conteúdo não é estático, ele é carregado a partir de arquivos externos. Interativo: responde às ações do usuário (busca, troca de idioma) em tempo real. Acessível: oferece o conteúdo em vários idiomas. Moderno: utiliza técnicas como animações em CSS e carregamento assíncrono de dados (fetch).
 
 
 
